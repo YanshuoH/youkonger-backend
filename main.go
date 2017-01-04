@@ -1,9 +1,22 @@
 package main
 
 import (
-  "fmt"
+	"flag"
+	"github.com/YanshuoH/youkonger/consts"
+	"github.com/go-playground/log"
+	"github.com/YanshuoH/youkonger/conf"
+	"github.com/YanshuoH/youkonger/routes"
 )
 
 func main() {
-  fmt.Println("Hello world!");
+	env := flag.String("env", "loc", "Specify your env")
+	file := flag.String("conf", "./conf/conf_loc.gcfg", "Specify config file")
+
+	listenPort := flag.String("port", consts.DefaultPort, "Specify the port")
+	flag.Parse()
+
+	log.Info("Running in %s", env)
+
+	conf.Setup(*file)
+	routes.Setup().Run(":" + *listenPort)
 }
