@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/log"
 	"github.com/YanshuoH/youkonger/conf"
 	"github.com/YanshuoH/youkonger/routes"
+	"github.com/YanshuoH/youkonger/dao"
 )
 
 func main() {
@@ -17,6 +18,10 @@ func main() {
 
 	log.Info("Running in %s", env)
 
-	conf.Setup(*file)
+	c := conf.Setup(*file)
+	dao.Connect(c.DbConf.Dsn)
+	// optional
+	dao.AutoMigration()
+
 	routes.Setup().Run(":" + *listenPort)
 }

@@ -9,26 +9,31 @@ var Config *config
 
 type config struct {
 	AppConf appConf
+	DbConf dbConf
 }
 
 type appConf struct {
 	GinMode string
 }
 
-func Setup(file string) *config {
+type dbConf struct {
+	Dsn string
+}
+
+func Setup(file string) (*config, error) {
 	if !filepath.IsAbs(file) {
 		f, e := filepath.Abs(file)
 		if e != nil {
-			panic(e)
+			return nil, e
 		}
 		file = f
 	}
 
 	c := &config{}
 	if err := gcfg.ReadFileInto(c, file); err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	Config = c
-	return Config
+	return Config, nil
 }

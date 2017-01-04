@@ -1,0 +1,5 @@
+[appConf]
+ginMode=debug
+
+[DbConf]
+dsn="youkonger:youkonger@tcp(127.0.0.1:3306)/youkongertest?parseTime=true&loc=Local"
