@@ -18,7 +18,10 @@ func main() {
 
 	log.Info("Running in %s", env)
 
-	c := conf.Setup(*file)
+	c, err := conf.Setup(*file)
+	if err != nil {
+		panic(err)
+	}
 	dao.Connect(c.DbConf.Dsn)
 	// optional
 	dao.AutoMigration()
