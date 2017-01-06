@@ -19,7 +19,8 @@ type EventParticipantForm struct {
 }
 
 type EventParticipantForms struct {
-	Forms []EventParticipantForm `json:"eventParticipantFormList"`
+	Forms []*EventParticipantForm `json:"eventParticipantFormList"`
+	EM               *dao.Manager             `json:"-"`
 }
 
 func (f *EventParticipantForm) validate() *utils.CommonError {
@@ -58,6 +59,7 @@ func (f *EventParticipantForm) insert() (*models.EventParticipant, *utils.Common
 
 func (f *EventParticipantForm) update() (*models.EventParticipant, *utils.CommonError) {
 	err := f.EM.Model(f.EventParticipant).Where("uuid = ?", f.UUID).Update("name", f.Name).Error
+
 	if err != nil {
 		return nil, utils.NewCommonError(consts.FormSaveError, err)
 	}
@@ -74,4 +76,23 @@ func (f *EventParticipantForm) Handle() (*models.EventParticipant, *utils.Common
 	}
 
 	return f.insert()
+}
+
+func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *utils.CommonError) {
+	for _, epf := range f.Forms {
+		epf.EM = f.EM
+		if cErr = epf.validate(); cErr != nil {
+			return
+		}
+	}
+
+	for _, epf := range f.Forms {
+		var ep *models.EventParticipant
+		if ep, cErr = epf.Handle(); cErr != nil {
+			return
+		}
+
+		res = append(res, *ep)
+	}
+	return
 }
