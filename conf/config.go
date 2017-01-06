@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"gopkg.in/gcfg.v1"
+	"github.com/BurntSushi/toml"
 	"path/filepath"
 )
 
@@ -9,7 +9,7 @@ var Config *config
 
 type config struct {
 	AppConf appConf
-	DbConf dbConf
+	DbConf  dbConf
 }
 
 type appConf struct {
@@ -30,7 +30,7 @@ func Setup(file string) (*config, error) {
 	}
 
 	c := &config{}
-	if err := gcfg.ReadFileInto(c, file); err != nil {
+	if _, err := toml.DecodeFile(file, c); err != nil {
 		return nil, err
 	}
 

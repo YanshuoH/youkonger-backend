@@ -22,16 +22,16 @@ var _ = Describe("Config", func() {
 
 		Context("With un-readable file content", func() {
 			It("Should return an error", func() {
-				c, err := Setup("conf_mock.gcfg")
+				c, err := Setup("conf_mock.toml")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("expected section header"))
+				Expect(err.Error()).To(ContainSubstring("Near line"))
 				Expect(c).To(BeNil())
 			})
 		})
 
 		Context("With correct file", func() {
 			It("Should return the right conf", func() {
-				c, err := Setup("conf_loc.gcfg")
+				c, err := Setup("conf_loc.toml")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(c.AppConf.GinMode).To(Equal(gin.DebugMode))
 			})

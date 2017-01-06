@@ -8,7 +8,7 @@ import (
 
 func Setup()  {
 	// load conf
-	c, err := conf.Setup("../conf/conf_test.gcfg")
+	c, err := conf.Setup("../conf/conf_test.toml")
 	if err != nil {
 		panic(err)
 	}

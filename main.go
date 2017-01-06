@@ -12,7 +12,7 @@ import (
 
 func main() {
 	env := flag.String("env", "loc", "Specify your env")
-	file := flag.String("conf", "./conf/conf_loc.gcfg", "Specify config file")
+	file := flag.String("conf", "./conf/conf_loc.toml", "Specify config file")
 
 	listenPort := flag.String("port", consts.DefaultPort, "Specify the port")
 	flag.Parse()
