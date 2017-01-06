@@ -48,19 +48,12 @@ var _ = Describe("EventParticipantForm", func() {
 
 		Context("With insert form", func() {
 			var eventDate models.EventDate
-			var eventParticipant models.EventParticipant
 			BeforeEach(func() {
 				ed := models.EventDate{
 					Time: time.Now(),
 				}
 				Expect(dao.Conn.Create(&ed).Error).NotTo(HaveOccurred())
-				ep := models.EventParticipant{
-					Name:        "bigbro",
-					EventDateID: ed.ID,
-				}
-				Expect(dao.Conn.Create(&ep).Error).NotTo(HaveOccurred())
 				eventDate = ed
-				eventParticipant = ep
 			})
 
 			It("Should return the created/updated event participant", func() {
@@ -84,6 +77,69 @@ var _ = Describe("EventParticipantForm", func() {
 				res, cErr = f.Handle()
 				Expect(cErr).To(BeNil())
 				Expect(res.Name).To(Equal("haha"))
+			})
+		})
+	})
+})
+
+var _ = Describe("EventParticipantForms", func() {
+	Describe("Handle", func() {
+		var eventDate models.EventDate
+		var eventParticipant models.EventParticipant
+		BeforeEach(func() {
+			ed := models.EventDate{
+				Time: time.Now(),
+			}
+			Expect(dao.Conn.Create(&ed).Error).NotTo(HaveOccurred())
+			ep := models.EventParticipant{
+				Name:        "bigbro",
+				EventDateID: ed.ID,
+			}
+			Expect(dao.Conn.Create(&ep).Error).NotTo(HaveOccurred())
+			eventDate = ed
+			eventParticipant = ep
+		})
+
+		Context("With incorrect form", func() {
+			It("Should return an error", func() {
+				f := EventParticipantForms{
+					Forms: []*EventParticipantForm{
+						&EventParticipantForm{},
+					},
+				}
+				res, cErr := f.Handle()
+				Expect(cErr.Code).To(Equal(consts.NoEntityManagerInForm))
+				Expect(res).To(HaveLen(0))
+			})
+		})
+
+		Context("With correct form", func() {
+			It("Should return the created/updated event participants", func() {
+				var initialCount int
+				dao.Conn.Raw("SELECT count(id) FROM event_participant").Row().Scan(&initialCount)
+
+				f := EventParticipantForms{
+					Forms: []*EventParticipantForm{
+						&EventParticipantForm{
+							EventDateUUID: eventDate.UUID,
+							UUID: eventParticipant.UUID,
+							Name: "hoho",
+						},
+						&EventParticipantForm{
+							EventDateUUID: eventDate.UUID,
+							Name: "haha",
+						},
+					},
+					EM: dao.GetManager(),
+				}
+				res, cErr := f.Handle()
+				Expect(cErr).To(BeNil())
+				Expect(res).To(HaveLen(len(f.Forms)))
+
+				var finalCount int
+				dao.Conn.Raw("SELECT count(id) FROM event_participant").Row().Scan(&finalCount)
+
+				Expect(finalCount).To(Equal(initialCount + 1))
 			})
 		})
 	})
