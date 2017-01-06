@@ -1,4 +1,4 @@
-package dao_test
+package form_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,11 +8,9 @@ import (
 	"testing"
 )
 
-func TestDao(t *testing.T) {
+func TestForms(t *testing.T) {
 	RegisterFailHandler(Fail)
-
-	// close when specs done
-	defer RunSpecs(t, "Dao Suite")
+	RunSpecs(t, "Forms Suite")
 }
 
 var _ = BeforeSuite(func() {

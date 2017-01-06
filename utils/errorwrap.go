@@ -33,7 +33,8 @@ func NewCommonError(code string, err error, optionals ...string) *CommonError {
 	if err == nil {
 		e.Err = errors.New(e.Description)
 	} else {
-		e.Err = errors.Wrap(err, e.Description)
+		e.Err = err
+		e.Detail = err.Error()
 	}
 
 	return e

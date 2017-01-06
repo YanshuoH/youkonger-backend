@@ -3,11 +3,10 @@ package utils_test
 import (
 	. "github.com/YanshuoH/youkonger/utils"
 
+	"errors"
+	"github.com/YanshuoH/youkonger/consts"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/YanshuoH/youkonger/consts"
-	"errors"
-	errorWrap "github.com/pkg/errors"
 )
 
 var _ = Describe("Errorwrap", func() {
@@ -28,9 +27,9 @@ var _ = Describe("Errorwrap", func() {
 				cErr := NewCommonError(consts.EventNotFound, errors.New("yo"), "description", "detail")
 				Expect(cErr.Code).Should(Equal(consts.EventNotFound))
 				Expect(cErr.Description).Should(Equal("description"))
-				Expect(cErr.Detail).Should(Equal("detail"))
+				Expect(cErr.Detail).Should(Equal("yo"))
 				// give it a wrap
-				Expect(cErr.Err.Error()).Should(Equal(errorWrap.Wrap(err, cErr.Description).Error()))
+				Expect(cErr.Err.Error()).Should(Equal(err.Error()))
 			})
 		})
 	})

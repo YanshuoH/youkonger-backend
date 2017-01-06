@@ -1,6 +1,9 @@
 package models
 
-import "github.com/satori/go.uuid"
+import (
+	"github.com/satori/go.uuid"
+	"time"
+)
 
 type Event struct {
 	BaseModel
@@ -14,5 +17,10 @@ type Event struct {
 }
 
 func (e *Event) BeforeCreate() {
+	e.AdminHash = uuid.NewV4().String()
 	e.UUID = uuid.NewV4().String()
+
+	now := time.Now()
+	e.CreatedAt = now
+	e.UpdatedAt = now
 }

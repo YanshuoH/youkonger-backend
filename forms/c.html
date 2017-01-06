@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/YanshuoH/youkonger/forms/event.go (92.1%)</option>
+				
+				<option value="file1">github.com/YanshuoH/youkonger/forms/event_date.go (56.1%)</option>
+				
+				<option value="file2">github.com/YanshuoH/youkonger/forms/event_participant.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package form
+
+import (
+        "github.com/YanshuoH/youkonger/consts"
+        "github.com/YanshuoH/youkonger/dao"
+        "github.com/YanshuoH/youkonger/models"
+        "github.com/YanshuoH/youkonger/utils"
+        "github.com/satori/go.uuid"
+)
+
+type EventForm struct {
+        UUID        string `json:"uuid"`
+        Title       string `json:"title" binding:"required"`
+        Description string `json:"title"`
+        Location    string `json:"location"`
+
+        EventDateForms
+
+        // transients
+        Event *models.Event
+        EM    *dao.Manager
+}
+
+func (f *EventForm) validate() *utils.CommonError <span class="cov8" title="1">{
+        if f.EM == nil </span><span class="cov8" title="1">{
+                return utils.NewCommonError(consts.NoEntityManagerInForm, nil)
+        }</span>
+
+        <span class="cov8" title="1">if f.UUID != "" </span><span class="cov8" title="1">{
+                ed, err := f.EM.Event().FindByUUID(f.UUID)
+                if err != nil </span><span class="cov8" title="1">{
+                        return utils.NewCommonError(consts.EventNotFound, nil)
+                }</span>
+                <span class="cov8" title="1">f.Event = ed</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (f *EventForm) update() (*models.Event, *utils.CommonError) <span class="cov8" title="1">{
+        m := map[string]interface{}{
+                "title":       f.Title,
+                "description": f.Description,
+                "location":    f.Location,
+        }
+        err := f.EM.Model(f.Event).Where("uuid = ?", f.UUID).Updates(m).Error
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, utils.NewCommonError(consts.FormSaveError, err)
+        }</span>
+
+        <span class="cov8" title="1">return f.Event, nil</span>
+}
+
+func (f *EventForm) insert() (*models.Event, *utils.CommonError) <span class="cov8" title="1">{
+        e := &amp;models.Event{
+                Title:       f.Title,
+                Description: f.Description,
+                Location:    f.Location,
+                AdminHash:   uuid.NewV4().String(),
+        }
+
+        if err := f.EM.Create(e).Error; err != nil </span><span class="cov0" title="0">{
+                return nil, utils.NewCommonError(consts.FormSaveError, err)
+        }</span>
+
+        <span class="cov8" title="1">return e, nil</span>
+}
+
+func (f *EventForm) Handle() (*models.Event, *utils.CommonError) <span class="cov8" title="1">{
+        if cErr := f.validate(); cErr != nil </span><span class="cov8" title="1">{
+                return nil, cErr
+        }</span>
+
+        <span class="cov8" title="1">var e *models.Event
+        var cErr *utils.CommonError
+        isCreate := false
+
+        if f.UUID != "" &amp;&amp; !f.EM.NewRecord(f.Event) </span><span class="cov8" title="1">{
+                e, cErr = f.update()
+        }</span><span class="cov8" title="1"> else {
+                e, cErr = f.insert()
+                isCreate = true
+        }</span>
+        <span class="cov8" title="1">if cErr != nil </span><span class="cov0" title="0">{
+                return nil, cErr
+        }</span>
+
+        // the first insertion must have more than one dates
+        <span class="cov8" title="1">if isCreate &amp;&amp; len(f.EventDateForms.Forms) == 0 </span><span class="cov8" title="1">{
+                return nil, utils.NewCommonError(consts.EventDateRequiredWhenInitializing, nil)
+        }</span>
+
+        <span class="cov8" title="1">if len(f.EventDateForms.Forms) &gt; 0 </span><span class="cov8" title="1">{
+                // try to insert event dates
+                f.EventDateForms.EM = f.EM
+                f.EventDateForms.Event = e
+                eds, cErr := f.EventDateForms.Handle()
+                if cErr != nil </span><span class="cov8" title="1">{
+                        return nil, cErr
+                }</span>
+
+                <span class="cov8" title="1">e.EventDates = eds</span>
+        }
+
+        <span class="cov8" title="1">return e, cErr</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package form
+
+import (
+        "github.com/YanshuoH/youkonger/consts"
+        "github.com/YanshuoH/youkonger/dao"
+        "github.com/YanshuoH/youkonger/models"
+        "github.com/YanshuoH/youkonger/utils"
+        "time"
+)
+
+type EventDateForm struct {
+        UUID       string `json:"uuid"`
+        EventUUID  string `json:"eventUuid" binding:"required"`
+        TimeInUnix int64  `json:"timeInUnix" binding:"required"`
+
+        // transients
+        Event     *models.Event     `json:"-"`
+        EventDate *models.EventDate `json:"-"`
+        EM        *dao.Manager      `json:"-"`
+}
+
+type EventDateForms struct {
+        Forms []*EventDateForm `json:"eventDateList"`
+        Event *models.Event   `json:"-"`
+        EM    *dao.Manager    `json:"-"`
+}
+
+func (f *EventDateForm) validate() *utils.CommonError <span class="cov8" title="1">{
+        if f.EM == nil </span><span class="cov0" title="0">{
+                return utils.NewCommonError(consts.NoEntityManagerInForm, nil)
+        }</span>
+
+        <span class="cov8" title="1">if f.TimeInUnix &lt; 0 </span><span class="cov8" title="1">{
+                return utils.NewCommonError(consts.IncorrectUnixTime, nil)
+        }</span>
+
+        // try to load EventDate if uuid provided
+        <span class="cov8" title="1">if f.UUID != "" </span><span class="cov0" title="0">{
+                ed, err := f.EM.EventDate().FindByUUID(f.UUID)
+                if err != nil </span><span class="cov0" title="0">{
+                        return utils.NewCommonError(consts.EventDateNotFound, nil)
+                }</span>
+                <span class="cov0" title="0">f.EventDate = ed</span>
+        }
+
+        // try to load event if not provided in form
+        <span class="cov8" title="1">if f.Event == nil </span><span class="cov0" title="0">{
+                e, err := f.EM.Event().FindByUUID(f.EventUUID)
+                if err != nil </span><span class="cov0" title="0">{
+                        return utils.NewCommonError(consts.EventNotFound, nil)
+                }</span>
+                <span class="cov0" title="0">f.Event = e</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (f *EventDateForm) insert() (*models.EventDate, *utils.CommonError) <span class="cov8" title="1">{
+        ed := models.EventDate{
+                EventID: f.Event.ID,
+                Time:    time.Unix(f.TimeInUnix, 0),
+        }
+        if err := f.EM.Create(&amp;ed).Error; err != nil </span><span class="cov0" title="0">{
+                return nil, utils.NewCommonError(consts.FormSaveError, err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;ed, nil</span>
+}
+
+func (f *EventDateForm) update() (*models.EventDate, *utils.CommonError) <span class="cov0" title="0">{
+        err := f.EM.Model(f.EventDate).Where("uuid = ?", f.UUID).Update("time", f.TimeInUnix).Error
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, utils.NewCommonError(consts.FormSaveError, err)
+        }</span>
+        <span class="cov0" title="0">return f.EventDate, nil</span>
+}
+
+func (f *EventDateForm) Handle() (*models.EventDate, *utils.CommonError) <span class="cov8" title="1">{
+        if cErr := f.validate(); cErr != nil </span><span class="cov0" title="0">{
+                return nil, cErr
+        }</span>
+
+        <span class="cov8" title="1">if f.UUID != "" &amp;&amp; !f.EM.NewRecord(f.EventDate) </span><span class="cov0" title="0">{
+                return f.update()
+        }</span>
+
+        <span class="cov8" title="1">return f.insert()</span>
+}
+
+func (f *EventDateForms) Handle() (res []models.EventDate, cErr *utils.CommonError) <span class="cov8" title="1">{
+        // must have event entity in form
+        if f.Event == nil || f.EM == nil </span><span class="cov0" title="0">{
+                return res, utils.NewCommonError(consts.DefaultErrorMsg, nil, "Coding error! Check EventDateForms")
+        }</span>
+        <span class="cov8" title="1">for _, edf := range f.Forms </span><span class="cov8" title="1">{
+                // inject em and event
+                edf.EM = f.EM
+                edf.Event = f.Event
+
+                if cErr = edf.validate(); cErr != nil </span><span class="cov8" title="1">{
+                        return res, cErr
+                }</span>
+        }
+
+        <span class="cov8" title="1">for _, edf := range f.Forms </span><span class="cov8" title="1">{
+                ed, cErr := edf.Handle()
+                if cErr != nil </span><span class="cov0" title="0">{
+                        return res, cErr
+                }</span>
+                <span class="cov8" title="1">res = append(res, *ed)</span>
+        }
+
+        <span class="cov8" title="1">return res, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package form
+
+import (
+        "github.com/YanshuoH/youkonger/consts"
+        "github.com/YanshuoH/youkonger/dao"
+        "github.com/YanshuoH/youkonger/models"
+        "github.com/YanshuoH/youkonger/utils"
+)
+
+type EventParticipantForm struct {
+        UUID          string `json:"uuid"`
+        EventDateUUID string `json:"eventDateUuid" binding:"required"`
+        Name          string `json:"name" binding:"required"`
+
+        // transients
+        EM               *dao.Manager             `json:"-"`
+        EventDate        *models.EventDate        `json:"-"`
+        EventParticipant *models.EventParticipant `json:"-"`
+}
+
+type EventParticipantForms struct {
+        Forms []EventParticipantForm `json:"eventParticipantFormList"`
+}
+
+func (f *EventParticipantForm) validate() *utils.CommonError <span class="cov0" title="0">{
+        if f.EM == nil </span><span class="cov0" title="0">{
+                return utils.NewCommonError(consts.NoEntityManagerInForm, nil)
+        }</span>
+
+        <span class="cov0" title="0">if f.UUID != "" </span><span class="cov0" title="0">{
+                ep, err := f.EM.EventParticipant().FindByUUID(f.UUID)
+                if err != nil </span><span class="cov0" title="0">{
+                        return utils.NewCommonError(consts.EventParticipantNotFound, nil)
+                }</span>
+                <span class="cov0" title="0">f.EventParticipant = ep</span>
+        }
+
+        <span class="cov0" title="0">ed, err := f.EM.EventDate().FindByUUID(f.EventDateUUID)
+        if err != nil </span><span class="cov0" title="0">{
+                return utils.NewCommonError(consts.EventDateNotFound, nil)
+        }</span>
+        <span class="cov0" title="0">f.EventDate = ed
+
+        return nil</span>
+}
+
+func (f *EventParticipantForm) insert() (*models.EventParticipant, *utils.CommonError) <span class="cov0" title="0">{
+        ep := &amp;models.EventParticipant{
+                Name: f.Name,
+                EventDateID: f.EventDate.ID,
+        }
+        if err := f.EM.Create(ep).Error; err != nil </span><span class="cov0" title="0">{
+                return nil, utils.NewCommonError(consts.FormSaveError, err)
+        }</span>
+
+        <span class="cov0" title="0">return ep, nil</span>
+}
+
+func (f *EventParticipantForm) update() (*models.EventParticipant, *utils.CommonError) <span class="cov0" title="0">{
+        err := f.EM.Model(f.EventParticipant).Where("uuid = ?", f.UUID).Update("name", f.Name).Error
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, utils.NewCommonError(consts.FormSaveError, err)
+        }</span>
+        <span class="cov0" title="0">return f.EventParticipant, nil</span>
+}
+
+func (f *EventParticipantForm) Handle() (*models.EventParticipant, *utils.CommonError) <span class="cov0" title="0">{
+        if cErr := f.validate(); cErr != nil </span><span class="cov0" title="0">{
+                return nil, cErr
+        }</span>
+
+        <span class="cov0" title="0">if f.UUID != "" &amp;&amp; !f.EM.NewRecord(f.EventParticipant) </span><span class="cov0" title="0">{
+                return f.update()
+        }</span>
+
+        <span class="cov0" title="0">return f.insert()</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
