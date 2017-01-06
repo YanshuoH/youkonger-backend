@@ -7,6 +7,7 @@ import (
 	"github.com/YanshuoH/youkonger/conf"
 	"github.com/YanshuoH/youkonger/routes"
 	"github.com/YanshuoH/youkonger/dao"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -25,6 +26,9 @@ func main() {
 	dao.Connect(c.DbConf.Dsn)
 	// optional
 	dao.AutoMigration()
+
+	// enable in debug mode
+	dao.Conn.LogMode(c.AppConf.GinMode == gin.DebugMode)
 
 	routes.Setup().Run(":" + *listenPort)
 }
