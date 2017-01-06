@@ -7,10 +7,19 @@ import (
 	"testing"
 	"github.com/YanshuoH/youkonger/conf"
 	"github.com/YanshuoH/youkonger/dao"
+	"github.com/YanshuoH/youkonger/models"
 )
 
 func TestDao(t *testing.T) {
 	RegisterFailHandler(Fail)
+
+	// close when specs done
+	defer
+
+	RunSpecs(t, "Dao Suite")
+}
+
+var _ = BeforeSuite(func() {
 	// load conf
 	c, err := conf.Setup("../conf/conf_test.gcfg")
 	if err != nil {
@@ -21,8 +30,19 @@ func TestDao(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+
+	// drop tables
+	dao.Conn.
+		DropTableIfExists(&models.Event{}).
+		DropTableIfExists(&models.EventDate{}).
+		DropTableIfExists(&models.EventParticipant{}).
+		DropTableIfExists(&models.EventUnavailable{})
+
 	// migration tables
 	dao.AutoMigration()
+	dao.Conn.LogMode(true)
+})
 
-	RunSpecs(t, "Dao Suite")
-}
+var _ = AfterSuite(func() {
+	dao.Conn.Close()
+})

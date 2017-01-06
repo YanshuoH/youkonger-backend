@@ -3,20 +3,24 @@ package dao
 import "github.com/jinzhu/gorm"
 import _ "github.com/jinzhu/gorm/dialects/mysql"
 
-type manager struct {
+type Manager struct {
 	*gorm.DB // alias
 }
 
-func (m *manager) Event() *event {
+func (m *Manager) Event(locks ...bool) *event {
 	return &event{m.DB}
 }
-
-func GetManager(tx ...*gorm.DB) *manager {
-	if len(tx) > 0 {
-		return &manager{tx[0]}
-	}
-
-	return &manager{Conn}
+func (m *Manager) EventDate() *eventDate {
+	return &eventDate{m.DB}
+}
+func (m *Manager) EventParticipant() *eventParticipant {
+	return &eventParticipant{m.DB}
 }
 
+func GetManager(tx ...*gorm.DB) *Manager {
+	if len(tx) > 0 {
+		return &Manager{tx[0]}
+	}
 
+	return &Manager{Conn}
+}

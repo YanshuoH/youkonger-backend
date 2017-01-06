@@ -18,6 +18,7 @@ func Connect(dsnString string) *gorm.DB {
 	Conn = conn
 	Conn.SingularTable(true)
 
+	setupDaoAsService()
 	return Conn
 }
 
@@ -27,4 +28,11 @@ func AutoMigration() {
 		AutoMigrate(&models.EventDate{}).
 		AutoMigrate(&models.EventParticipant{}).
 		AutoMigrate(&models.EventUnavailable{})
+}
+
+func setupDaoAsService() {
+	initEvent(Conn)
+	initEventDate(Conn)
+	initEventParticipant(Conn)
+	initEventUnavailable(Conn)
 }

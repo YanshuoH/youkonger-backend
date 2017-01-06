@@ -32,4 +32,18 @@ var _ = Describe("Manager", func() {
 			Expect(em.Event()).NotTo(BeNil())
 		})
 	})
+
+	Describe("EventDate", func() {
+		It("Should return an EventDate dao", func() {
+			em := GetManager()
+			Expect(em.EventDate()).NotTo(BeNil())
+		})
+	})
+
+	Describe("EventParticipant", func() {
+		It("Should return an EventParticipant dao", func() {
+			em := GetManager()
+			Expect(em.EventParticipant()).NotTo(BeNil())
+		})
+	})
 })
