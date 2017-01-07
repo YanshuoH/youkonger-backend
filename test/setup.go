@@ -1,12 +1,12 @@
 package test
 
 import (
-	"github.com/YanshuoH/youkonger/models"
-	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/conf"
+	"github.com/YanshuoH/youkonger/dao"
+	"github.com/YanshuoH/youkonger/models"
 )
 
-func Setup()  {
+func Setup() {
 	// load conf
 	c, err := conf.Setup("../conf/conf_test.toml")
 	if err != nil {

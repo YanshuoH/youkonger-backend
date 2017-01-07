@@ -8,6 +8,7 @@ import (
 	"github.com/YanshuoH/youkonger/routes"
 	"github.com/YanshuoH/youkonger/dao"
 	"github.com/gin-gonic/gin"
+	"github.com/YanshuoH/youkonger/jrenders"
 )
 
 func main() {
@@ -29,6 +30,9 @@ func main() {
 
 	// enable in debug mode
 	dao.Conn.LogMode(c.AppConf.GinMode == gin.DebugMode)
+
+	// register jrenders
+	jrenders.Register()
 
 	routes.Setup().Run(":" + *listenPort)
 }
