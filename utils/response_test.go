@@ -34,4 +34,20 @@ var _ = Describe("Response", func() {
 			})
 		})
 	})
+
+	Describe("NewOKJSONResponse", func() {
+		Context("With provided data", func() {
+			It("Should return a json response object with ok status", func() {
+				d := struct {
+					T string
+				} {
+					T: "yo",
+				}
+				r := NewOKJSONResponse(d)
+				Expect(r.ResultCode).To(Equal(consts.OK))
+				Expect(r.ResultDescription).To(Equal(consts.Messenger.Get(consts.OK)))
+				Expect(r.Data).To(Equal(d))
+			})
+		})
+	})
 })

@@ -21,3 +21,11 @@ func NewJSONResponse(resultCode string, datas ...interface{}) JSONResponse {
 
 	return r
 }
+
+func NewOKJSONResponse(data interface{}) JSONResponse {
+	return JSONResponse{
+		ResultCode: consts.OK,
+		ResultDescription: consts.Messenger.Get(consts.OK),
+		Data: data,
+	}
+}
