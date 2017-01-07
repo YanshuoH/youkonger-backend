@@ -22,8 +22,7 @@ var _ = Describe("EventDate", func() {
 
 		Context("With existed uuid", func() {
 			It("Should return the right eventDate entity", func() {
-				toInsert :=
-					models.EventDate{
+				toInsert := models.EventDate{
 						Time: time.Now(),
 					}
 				Expect(Conn.Create(&toInsert).Error).ToNot(HaveOccurred())
@@ -32,6 +31,42 @@ var _ = Describe("EventDate", func() {
 				Expect(err).To(BeNil())
 				// format equal
 				Expect(ed.Time.Format(time.RFC822)).To(Equal(toInsert.Time.Format(time.RFC822)))
+			})
+		})
+	})
+
+	Describe("LoadEventParticipants", func() {
+		Context("With given eventDate", func() {
+			var eventDate models.EventDate
+			var eventParticipants []models.EventParticipant
+			BeforeEach(func() {
+				edToInsert := models.EventDate{
+					Time: time.Now(),
+				}
+				epToInserts := []models.EventParticipant{
+					models.EventParticipant{
+						Name: "1",
+					},
+					models.EventParticipant{
+						Name: "2",
+					},
+				}
+				Expect(Conn.Create(&edToInsert).Error).ToNot(HaveOccurred())
+				for _, ep := range epToInserts {
+					ep.EventDateID = edToInsert.ID
+					Expect(Conn.Create(&ep).Error).ToNot(HaveOccurred())
+				}
+				eventDate = edToInsert
+				eventParticipants = epToInserts
+			})
+
+			It("Should load its related participants", func() {
+				err := EventDate.LoadEventParticipants(&eventDate)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(eventDate.EventParticipants).To(HaveLen(len(eventParticipants)))
+				for _, ep := range eventDate.EventParticipants {
+					Expect(ep.EventDateID).To(Equal(eventDate.ID))
+				}
 			})
 		})
 	})

@@ -15,6 +15,10 @@ func (ed *eventDate) FindByUUID(uuid string) (*models.EventDate, error) {
 	return res, err
 }
 
+func (ed *eventDate) LoadEventParticipants(eventDate *models.EventDate) error {
+	return ed.Where("event_date_id = ? AND removed = FALSE", eventDate.ID).Find(&eventDate.EventParticipants).Error
+}
+
 var EventDate *eventDate
 
 func initEventDate(conn *gorm.DB) {
