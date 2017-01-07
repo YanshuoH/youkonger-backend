@@ -1,9 +1,13 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type EventDate struct {
 	BaseModel
 	EventID uint64
 	Time    time.Time
+
+	EventParticipants []EventParticipant
 }
