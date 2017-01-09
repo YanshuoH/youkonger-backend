@@ -6,11 +6,12 @@ import (
 	"github.com/YanshuoH/youkonger/models"
 	"github.com/YanshuoH/youkonger/utils"
 	"time"
+	"github.com/pkg/errors"
 )
 
 type EventDateForm struct {
 	UUID       string `json:"uuid"`
-	EventUUID  string `json:"eventUuid" binding:"required"`
+	EventUUID  string `json:"eventUuid"`
 	TimeInUnix int64  `json:"timeInUnix" binding:"required"`
 
 	// transients
@@ -32,6 +33,11 @@ func (f *EventDateForm) validate() *utils.CommonError {
 
 	if f.TimeInUnix < 0 {
 		return utils.NewCommonError(consts.IncorrectUnixTime, nil)
+	}
+
+	// check event uuid
+	if f.EventUUID == "" {
+		return utils.NewCommonError(consts.FormInvalid, errors.New("eventUuid failed on required tag"))
 	}
 
 	// try to load EventDate if uuid provided
@@ -96,6 +102,7 @@ func (f *EventDateForms) Handle() (res []models.EventDate, cErr *utils.CommonErr
 		// inject em and event
 		edf.EM = f.EM
 		edf.Event = f.Event
+		edf.EventUUID = f.Event.UUID
 
 		if cErr = edf.validate(); cErr != nil {
 			return res, cErr

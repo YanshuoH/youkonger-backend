@@ -35,12 +35,25 @@ var _ = Describe("EventDateForm", func() {
 			})
 		})
 
+		Context("Without eventUuid", func() {
+			It("Should return an error", func() {
+				f := EventDateForm{
+					TimeInUnix: 123,
+					EM:         dao.GetManager(),
+				}
+				ed, cErr := f.Handle()
+				Expect(ed).To(BeNil())
+				Expect(cErr.Code).To(Equal(consts.FormInvalid))
+			})
+		})
+
 		Context("With incorrect eventDate uuid", func() {
 			It("Should return an error", func() {
 				f := EventDateForm{
 					EM:         dao.GetManager(),
 					TimeInUnix: time.Now().Unix(),
 					UUID:       "s",
+					EventUUID:  "d",
 				}
 				ed, cErr := f.Handle()
 				Expect(ed).To(BeNil())
@@ -127,9 +140,9 @@ var _ = Describe("EventDateForms", func() {
 			It("Should return an error", func() {
 				// create a new event and eventDate
 				e := models.Event{
-					Title: "t",
+					Title:       "t",
 					Description: "d",
-					Location: "l",
+					Location:    "l",
 				}
 				Expect(dao.Conn.Create(&e).Error).NotTo(HaveOccurred())
 
@@ -139,7 +152,7 @@ var _ = Describe("EventDateForms", func() {
 							TimeInUnix: -123,
 						},
 					},
-					EM: dao.GetManager(),
+					EM:    dao.GetManager(),
 					Event: &e,
 				}
 				res, cErr := f.Handle()
@@ -152,14 +165,14 @@ var _ = Describe("EventDateForms", func() {
 			BeforeEach(func() {
 				// create a new event and eventDate
 				e := models.Event{
-					Title: "t",
+					Title:       "t",
 					Description: "d",
-					Location: "l",
+					Location:    "l",
 				}
 				Expect(dao.Conn.Create(&e).Error).NotTo(HaveOccurred())
 				ed := models.EventDate{
 					EventID: e.ID,
-					Time: time.Now(),
+					Time:    time.Now(),
 				}
 				Expect(dao.Conn.Create(&ed).Error).NotTo(HaveOccurred())
 				event = e
@@ -172,17 +185,17 @@ var _ = Describe("EventDateForms", func() {
 				f := EventDateForms{
 					Forms: []*EventDateForm{
 						&EventDateForm{
-							UUID: eventDate.UUID,
-							EventUUID: event.UUID,
+							UUID:       eventDate.UUID,
+							EventUUID:  event.UUID,
 							TimeInUnix: 123,
 						},
 						&EventDateForm{
-							EventUUID: event.UUID,
+							EventUUID:  event.UUID,
 							TimeInUnix: 456,
 						},
 					},
 					Event: &event,
-					EM: dao.GetManager(),
+					EM:    dao.GetManager(),
 				}
 				res, cErr := f.Handle()
 				Expect(cErr).To(BeNil())
