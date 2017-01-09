@@ -12,6 +12,7 @@ type EventForm struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"title"`
 	Location    string `json:"location"`
+	AdminHash   string `json:"hash"`
 
 	EventDateForms
 
@@ -26,9 +27,15 @@ func (f *EventForm) validate() *utils.CommonError {
 	}
 
 	if f.UUID != "" {
+		if f.AdminHash == "" {
+			return utils.NewCommonError(consts.InvalidAdminHash, nil)
+		}
 		ed, err := f.EM.Event().FindByUUID(f.UUID)
 		if err != nil {
 			return utils.NewCommonError(consts.EventNotFound, nil)
+		}
+		if ed.AdminHash != f.AdminHash {
+			return utils.NewCommonError(consts.InvalidAdminHash, nil)
 		}
 		f.Event = ed
 	}

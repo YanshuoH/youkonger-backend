@@ -68,7 +68,7 @@ func (f *EventDateForm) insert() (*models.EventDate, *utils.CommonError) {
 }
 
 func (f *EventDateForm) update() (*models.EventDate, *utils.CommonError) {
-	err := f.EM.Model(f.EventDate).Where("uuid = ?", f.UUID).Update("time", f.TimeInUnix).Error
+	err := f.EM.Model(f.EventDate).Where("uuid = ?", f.UUID).Update("time", time.Unix(f.TimeInUnix, 0)).Error
 	if err != nil {
 		return nil, utils.NewCommonError(consts.FormSaveError, err)
 	}
