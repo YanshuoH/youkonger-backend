@@ -73,4 +73,37 @@ var _ = Describe("Event", func() {
 			})
 		})
 	})
+
+	Describe("FindByEventParticipant", func() {
+		Context("With unreachable participant id", func() {
+			It("Should return an not found error", func() {
+				_, err := Event.FindByEventParticipant(&models.EventParticipant{})
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal(gorm.ErrRecordNotFound.Error()))
+			})
+		})
+
+		Context("With right participant id", func() {
+			It("Should return the right event", func() {
+				e := models.Event{
+					Title: "thing",
+				}
+				Expect(Conn.Create(&e).Error).NotTo(HaveOccurred())
+				ed := models.EventDate{
+					Time: time.Now(),
+					EventID: e.ID,
+				}
+				Expect(Conn.Create(&ed).Error).NotTo(HaveOccurred())
+				ep := models.EventParticipant{
+					Name: "yo",
+					EventDateID: ed.ID,
+				}
+				Expect(Conn.Create(&ep).Error).NotTo(HaveOccurred())
+
+				res, err := Event.FindByEventParticipant(&ep)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(res.ID).To(Equal(e.ID))
+			})
+		})
+	})
 })

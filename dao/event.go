@@ -19,6 +19,18 @@ func (e *event) LoadEventDates(event *models.Event) error {
 	return e.Where("event_id = ? AND removed = FALSE", event.ID).Find(&event.EventDates).Error
 }
 
+func (e *event) FindByEventParticipant(ep *models.EventParticipant) (*models.Event, error) {
+	res := &models.Event{}
+	err := e.Select("event.*").
+		Joins("INNER JOIN event_date ed ON ed.event_id = event.id").
+		Joins("INNER JOIN event_participant ep ON ep.event_date_id = ed.id").
+		Where("ep.id = ?", ep.ID).
+		First(res).
+		Error
+
+	return res, err
+}
+
 var Event *event
 
 func initEvent(conn *gorm.DB) {
