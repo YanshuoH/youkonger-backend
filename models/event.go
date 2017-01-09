@@ -12,7 +12,6 @@ type Event struct {
 	Location         string
 	AdminHash        string `gorm:"unique_index"`
 	EventDates       []EventDate
-	EventParticipant []EventParticipant
 	EventUnavailable []EventUnavailable
 }
 

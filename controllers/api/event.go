@@ -27,7 +27,10 @@ func ApiEventUpsert(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.NewJSONResponse(cErr.Code, cErr.Err.Error()))
 		return
 	}
-	em.Commit()
+	if err := em.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, utils.NewJSONResponse(consts.DefaultErrorMsg, err.Error()))
+		return
+	}
 
 	c.JSON(http.StatusOK, utils.NewOKJSONResponse(
 		jrenders.Event.Itemize(event, jrenders.EventParam{true})))

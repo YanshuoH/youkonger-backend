@@ -25,6 +25,12 @@ func Setup() *gin.Engine {
 			eventRouter.POST("/create", api.ApiEventUpsert)
 			eventRouter.PUT("/update", api.ApiEventUpsert)
 		}
+
+		eventParticipantRouter := apiRouter.Group("/eventparticipant")
+		{
+			eventParticipantRouter.POST("/create", api.ApiEventParticipantUpsert)
+			eventParticipantRouter.PUT("/update", api.ApiEventParticipantUpsert)
+		}
 	}
 
 	return router
