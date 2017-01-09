@@ -113,6 +113,15 @@ var _ = Describe("EventParticipantForms", func() {
 			})
 		})
 
+		Context("With form length equals to zero", func() {
+			It("Should return an error", func() {
+				f := EventParticipantForms{}
+				res, cErr := f.Handle()
+				Expect(cErr.Code).To(Equal(consts.FormInvalid))
+				Expect(res).To(HaveLen(0))
+			})
+		})
+
 		Context("With correct form", func() {
 			It("Should return the created/updated event participants", func() {
 				var initialCount int

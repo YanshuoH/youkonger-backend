@@ -5,6 +5,7 @@ import (
 	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/models"
 	"github.com/YanshuoH/youkonger/utils"
+	"github.com/pkg/errors"
 )
 
 type EventParticipantForm struct {
@@ -19,8 +20,8 @@ type EventParticipantForm struct {
 }
 
 type EventParticipantForms struct {
-	Forms []*EventParticipantForm `json:"eventParticipantFormList"`
-	EM               *dao.Manager             `json:"-"`
+	Forms []*EventParticipantForm `json:"eventParticipantList"`
+	EM    *dao.Manager            `json:"-"`
 }
 
 func (f *EventParticipantForm) validate() *utils.CommonError {
@@ -47,7 +48,7 @@ func (f *EventParticipantForm) validate() *utils.CommonError {
 
 func (f *EventParticipantForm) insert() (*models.EventParticipant, *utils.CommonError) {
 	ep := &models.EventParticipant{
-		Name: f.Name,
+		Name:        f.Name,
 		EventDateID: f.EventDate.ID,
 	}
 	if err := f.EM.Create(ep).Error; err != nil {
@@ -79,6 +80,11 @@ func (f *EventParticipantForm) Handle() (*models.EventParticipant, *utils.Common
 }
 
 func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *utils.CommonError) {
+	// not allow empty slice
+	if len(f.Forms) == 0 {
+		return res, utils.NewCommonError(consts.FormInvalid, errors.New("Expected a none-zero length form"))
+	}
+
 	for _, epf := range f.Forms {
 		epf.EM = f.EM
 		if cErr = epf.validate(); cErr != nil {
