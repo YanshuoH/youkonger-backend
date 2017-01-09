@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/YanshuoH/youkonger/conf"
 	"github.com/YanshuoH/youkonger/controllers/api"
-	"github.com/gin-gonic/gin"
 )
 
 func Setup() *gin.Engine {
@@ -17,11 +17,14 @@ func Setup() *gin.Engine {
 	// loading views
 	router.LoadHTMLGlob("views/*")
 
-	eventRouter := router.Group("/event")
+	apiRouter := router.Group("/api")
 	{
-		eventRouter.GET("/get", api.ApiEventGet)
-		eventRouter.POST("/create", api.ApiEventUpsert)
-		eventRouter.POST("/update", api.ApiEventUpsert)
+		eventRouter := apiRouter.Group("/event")
+		{
+			eventRouter.GET("/get", api.ApiEventGet)
+			eventRouter.POST("/create", api.ApiEventUpsert)
+			eventRouter.PUT("/update", api.ApiEventUpsert)
+		}
 	}
 
 	return router
