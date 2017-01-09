@@ -53,6 +53,10 @@ func PerformRequest(method, url string, engine *gin.Engine, datas ...string) *ht
 	} else {
 		req, _ = http.NewRequest(method, url, nil)
 	}
+	if method == http.MethodPost || method == http.MethodPut {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
 	w := httptest.NewRecorder()
 	engine.ServeHTTP(w, req)
 	return w

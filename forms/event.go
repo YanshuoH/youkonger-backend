@@ -10,7 +10,7 @@ import (
 type EventForm struct {
 	UUID        string `json:"uuid"`
 	Title       string `json:"title" binding:"required"`
-	Description string `json:"title"`
+	Description string `json:"description"`
 	Location    string `json:"location"`
 	AdminHash   string `json:"hash"`
 
