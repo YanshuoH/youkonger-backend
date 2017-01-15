@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/YanshuoH/youkonger/conf"
 	"github.com/YanshuoH/youkonger/controllers/api"
+	"github.com/YanshuoH/youkonger/controllers"
 )
 
 func Setup() *gin.Engine {
@@ -15,7 +16,13 @@ func Setup() *gin.Engine {
 	router.Use(gin.Recovery())
 
 	// loading views
-	router.LoadHTMLGlob("views/*")
+	router.LoadHTMLGlob("views/index.html")
+	router.Static("/assets", "./public/assets")
+
+	viewRouter := router.Group("/")
+	{
+		viewRouter.GET("/", controllers.OK)
+	}
 
 	apiRouter := router.Group("/api")
 	{
@@ -24,6 +31,7 @@ func Setup() *gin.Engine {
 			eventRouter.GET("/get", api.ApiEventGet)
 			eventRouter.POST("/create", api.ApiEventUpsert)
 			eventRouter.PUT("/update", api.ApiEventUpsert)
+			eventRouter.POST("/upsert", api.ApiEventUpsert)
 		}
 
 		eventParticipantRouter := apiRouter.Group("/eventparticipant")
