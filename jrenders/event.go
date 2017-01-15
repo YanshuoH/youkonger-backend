@@ -13,7 +13,7 @@ type JEvent struct {
 	Description string `json:"description"`
 	Location    string `json:"location"`
 	AdminHash   string `json:"hash"`
-	JEventDates `json:"eventDateList"`
+	JEventDates
 }
 
 type EventParam struct {
