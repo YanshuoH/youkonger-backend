@@ -11,7 +11,8 @@ def test(cover=''):
         'youkonger-conf': "github.com/YanshuoH/youkonger/conf",
         'youkonger-dao': "github.com/YanshuoH/youkonger/dao",
         'youkonger-consts': "github.com/YanshuoH/youkonger/consts",
-        # 'youkonger-controllers': "github.com/YanshuoH/youkonger/controllers",
+        'youkonger-api': "github.com/YanshuoH/youkonger/controllers/api",
+        'youkonger-middlewares': "github.com/YanshuoH/youkonger/controllers/middlewares",
         'youkonger-forms': "github.com/YanshuoH/youkonger/forms",
         'youkonger-utils': "github.com/YanshuoH/youkonger/utils",
     }
