@@ -5,6 +5,7 @@ import (
 	"github.com/YanshuoH/youkonger/conf"
 	"github.com/YanshuoH/youkonger/controllers/api"
 	"github.com/YanshuoH/youkonger/controllers"
+	"github.com/YanshuoH/youkonger/controllers/middlewares"
 )
 
 func Setup() *gin.Engine {
@@ -14,14 +15,18 @@ func Setup() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	router.NoRoute(middlewares.RedirectOn404())
 
 	// loading views
-	router.LoadHTMLGlob("views/index.html")
+	router.LoadHTMLGlob("views/*.html")
 	router.Static("/assets", "./public/assets")
 
-	viewRouter := router.Group("/")
+	router.GET("/", controllers.Index)
+	router.GET("/404", controllers.NotFound)
+
+	viewRouter := router.Group("/event")
 	{
-		viewRouter.GET("/", controllers.OK)
+		viewRouter.GET("/:eventUuid", controllers.ParticipateEvent)
 	}
 
 	apiRouter := router.Group("/api")
