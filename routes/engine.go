@@ -22,6 +22,7 @@ func Setup() *gin.Engine {
 	router.Static("/assets", "./public/assets")
 
 	router.GET("/", controllers.Index)
+	router.GET("/create", controllers.RedirectCreate)
 	router.GET("/404", controllers.NotFound)
 
 	viewRouter := router.Group("/event")

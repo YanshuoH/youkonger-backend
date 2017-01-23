@@ -2,13 +2,13 @@ package api
 
 import (
 	"github.com/YanshuoH/youkonger/consts"
+	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/forms"
+	"github.com/YanshuoH/youkonger/jrenders"
 	"github.com/YanshuoH/youkonger/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
-	"github.com/YanshuoH/youkonger/dao"
-	"github.com/YanshuoH/youkonger/jrenders"
 )
 
 func ApiEventUpsert(c *gin.Context) {
@@ -40,7 +40,7 @@ func ApiEventGet(c *gin.Context) {
 	f := struct {
 		UUID string `form:"uuid" binding:"required"`
 		Hash string `form:"hash"`
-	} {}
+	}{}
 	if err := binding.Form.Bind(c.Request, &f); err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewJSONResponse(consts.FormInvalid, err.Error()))
 		return
