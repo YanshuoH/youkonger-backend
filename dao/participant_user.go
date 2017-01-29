@@ -9,6 +9,12 @@ type participantUser struct {
 	*gorm.DB
 }
 
+func (pu *participantUser) FindById(id uint64) (*models.ParticipantUser, error) {
+	res := &models.ParticipantUser{}
+	err := pu.First(res, id).Error
+	return res, err
+}
+
 func (pu *participantUser) FindByUUID(uuid string) (*models.ParticipantUser, error) {
 	res := &models.ParticipantUser{}
 	err := pu.Where("uuid = ? ANd removed = FALSE", uuid).First(&res).Error
