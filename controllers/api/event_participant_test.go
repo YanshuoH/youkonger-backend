@@ -88,7 +88,8 @@ var _ = Describe("EventParticipant", func() {
 								"name": "who",
 								"eventDateUuid": "%s"
 							}
-						]
+						],
+						"name": "haha"
 					}
 				`
 				resp := test.PerformRequest("POST", "/test", engine, fmt.Sprintf(j, eventDate.UUID))

@@ -39,13 +39,22 @@ var eventDateSet = []models.EventDate{
 	},
 }
 
+var participantUserSet = []models.ParticipantUser{
+	models.ParticipantUser{
+		BaseModel: models.BaseModel{
+			ID: 1,
+		},
+		Name: "someone",
+	},
+}
+
 var eventParticipantSet = []models.EventParticipant{
 	models.EventParticipant{
 		BaseModel: models.BaseModel{
 			ID: 1,
 		},
-		Name: "yo",
 		EventDateID: 1,
+		ParticipantUserId: 1,
 	},
 }
 
@@ -60,6 +69,9 @@ var _ = BeforeSuite(func() {
 	}
 	for _, ed := range eventDateSet {
 		conn.Create(&ed)
+	}
+	for _, pu := range participantUserSet {
+		conn.Create(&pu)
 	}
 	for _, ep := range eventParticipantSet {
 		conn.Create(&ep)

@@ -132,7 +132,6 @@ var _ = Describe("Event", func() {
 				resp := test.PerformRequest("POST", "/test", engine, j)
 				//Expect(resp.Code).To(Equal(http.StatusOK))
 				jresp := test.ReadJsonResponse(resp)
-				fmt.Println(jresp.Data)
 				Expect(jresp.ResultCode).To(Equal(consts.OK))
 			})
 		})

@@ -26,6 +26,8 @@ func ParticipateEvent(c *gin.Context) {
 	e, err := dao.Event.FindByUUID(eventUuid)
 	if err != nil {
 		// redirect to 404 page
+		NotFound(c)
+		return
 	}
 
 	// @TODO: handle exception
