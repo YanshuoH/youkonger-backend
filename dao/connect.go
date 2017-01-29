@@ -27,7 +27,8 @@ func AutoMigration() {
 		AutoMigrate(&models.Event{}).
 		AutoMigrate(&models.EventDate{}).
 		AutoMigrate(&models.EventParticipant{}).
-		AutoMigrate(&models.EventUnavailable{})
+		AutoMigrate(&models.EventUnavailable{}).
+		AutoMigrate(&models.ParticipantUser{})
 }
 
 func setupDaoAsService() {
@@ -35,4 +36,5 @@ func setupDaoAsService() {
 	initEventDate(Conn)
 	initEventParticipant(Conn)
 	initEventUnavailable(Conn)
+	initParticipantUser(Conn)
 }

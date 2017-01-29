@@ -10,7 +10,7 @@ type BaseModel struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	UUID      string `gorm:"unique_index"`
-	Removed   bool
+	Removed   bool `gorm:"default:FALSE"`
 }
 
 func (m *BaseModel) BeforeCreate() {

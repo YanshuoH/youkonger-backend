@@ -44,12 +44,8 @@ var _ = Describe("EventDate", func() {
 					Time: time.Now(),
 				}
 				epToInserts := []models.EventParticipant{
-					models.EventParticipant{
-						Name: "1",
-					},
-					models.EventParticipant{
-						Name: "2",
-					},
+					models.EventParticipant{},
+					models.EventParticipant{},
 				}
 				Expect(Conn.Create(&edToInsert).Error).ToNot(HaveOccurred())
 				for _, ep := range epToInserts {

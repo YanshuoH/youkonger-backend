@@ -95,7 +95,6 @@ var _ = Describe("Event", func() {
 				}
 				Expect(Conn.Create(&ed).Error).NotTo(HaveOccurred())
 				ep := models.EventParticipant{
-					Name: "yo",
 					EventDateID: ed.ID,
 				}
 				Expect(Conn.Create(&ep).Error).NotTo(HaveOccurred())

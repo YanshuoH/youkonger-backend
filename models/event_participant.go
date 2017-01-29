@@ -2,6 +2,7 @@ package models
 
 type EventParticipant struct {
 	BaseModel
-	Name        string
-	EventDateID uint64
+	EventDateID       uint64
+	ParticipantUserId int64
+	ParticipantUser   *ParticipantUser
 }

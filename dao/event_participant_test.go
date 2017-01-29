@@ -21,13 +21,13 @@ var _ = Describe("EventParticipant", func() {
 		Context("With existed uuid", func() {
 			It("Should return the right eventDate entity", func() {
 				toInsert := models.EventParticipant{
-					Name: "bigbro",
+					EventDateID: 51,
 				}
 				Expect(Conn.Create(&toInsert).Error).ToNot(HaveOccurred())
 
 				ep, err := EventParticipant.FindByUUID(toInsert.UUID)
 				Expect(err).To(BeNil())
-				Expect(ep.Name).To(Equal("bigbro"))
+				Expect(ep.EventDateID).To(Equal(toInsert.EventDateID))
 			})
 		})
 	})
