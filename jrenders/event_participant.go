@@ -1,12 +1,16 @@
 package jrenders
 
-import "github.com/YanshuoH/youkonger/models"
+import (
+	"github.com/YanshuoH/youkonger/dao"
+	"github.com/YanshuoH/youkonger/models"
+)
 
 type eventParticipant struct{}
 
 type JEventParticipant struct {
-	Name          string `json:"name"`
-	EventDateUUID string `json:"eventDateUuid"`
+	Name                string `json:"name"`
+	EventDateUUID       string `json:"eventDateUuid"`
+	ParticipantUserUUID string `json:"participantUserUuid"`
 }
 
 type JEventParticipants struct {
@@ -14,9 +18,14 @@ type JEventParticipants struct {
 }
 
 func (r *eventParticipant) Itemize(ep *models.EventParticipant, ed *models.EventDate) JEventParticipant {
+	if ep.ParticipantUser == nil {
+		pu, _ := dao.ParticipantUser.FindById(ep.ParticipantUserId)
+		ep.ParticipantUser = pu
+	}
 	j := JEventParticipant{
-		Name:          ep.Name,
-		EventDateUUID: ed.UUID,
+		Name:                ep.ParticipantUser.Name,
+		ParticipantUserUUID: ep.ParticipantUser.UUID,
+		EventDateUUID:       ed.UUID,
 	}
 	return j
 }

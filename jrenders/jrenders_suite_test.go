@@ -44,7 +44,6 @@ var eventParticipantSet = []models.EventParticipant{
 		BaseModel: models.BaseModel{
 			ID: 1,
 		},
-		Name: "yo",
 		EventDateID: 1,
 	},
 }
