@@ -21,6 +21,16 @@ func (pu *participantUser) FindByUUID(uuid string) (*models.ParticipantUser, err
 	return res, err
 }
 
+func (pu *participantUser) FindByUUIDAndEventUUID(uuid, eventUuid string) (*models.ParticipantUser, error) {
+	res := &models.ParticipantUser{}
+	err := pu.
+		Joins("INNER JOIN event e ON e.id = participant_user.event_id").
+		Where("participant_user.uuid = ? AND e.uuid = ? AND participant_user.removed = FALSE",
+			uuid, eventUuid).
+		First(&res).Error
+	return res, err
+}
+
 var ParticipantUser *participantUser
 
 func initParticipantUser(conn *gorm.DB) {

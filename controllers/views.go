@@ -25,22 +25,23 @@ func RedirectCreate(c *gin.Context) {
 
 func ParticipateEvent(c *gin.Context) {
 	eventUuid := c.Param("eventUuid")
-	var participantUser *models.ParticipantUser = nil
-	if participantUserUuid, err := c.Cookie(consts.ParticipantUserCookieKey); err == nil {
-		pu, err := dao.ParticipantUser.FindByUUID(participantUserUuid)
-		if err != nil {
-			log.Infof("No participant user with uuid %s", participantUserUuid)
-		} else {
-			participantUser = pu
-		}
-
-	}
-
+	// if event not found,
 	e, err := dao.Event.FindByUUID(eventUuid)
 	if err != nil {
 		// redirect to 404 page
 		NotFound(c)
 		return
+	}
+
+	// load participant user for this event
+	var participantUser *models.ParticipantUser = nil
+	if participantUserUuid, err := c.Cookie(consts.ParticipantUserCookieKey); err == nil {
+		pu, err := dao.ParticipantUser.FindByUUIDAndEventUUID(participantUserUuid, eventUuid)
+		if err != nil {
+			log.Infof("No participant user with uuid %s", participantUserUuid)
+		} else {
+			participantUser = pu
+		}
 	}
 
 	// @TODO: handle exception

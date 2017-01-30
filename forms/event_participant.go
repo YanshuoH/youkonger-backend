@@ -23,12 +23,15 @@ type EventParticipantForm struct {
 type EventParticipantForms struct {
 	Forms []EventParticipantForm `json:"eventParticipantList"`
 	Name  string                 `json:"name" binding:"required"`
+
 	// user's uuid
-	UUID string `json:"participantUserUuid"`
+	UUID      string `json:"participantUserUuid"`
+	EventUUID string `json:"eventUuid" binding:"required"`
 
 	// internal
 	EM              *dao.Manager            `json:"-"`
 	ParticipantUser *models.ParticipantUser `json:"-"`
+	Event *models.Event `json:"-"`
 }
 
 func (f *EventParticipantForm) validate() *utils.CommonError {
@@ -94,8 +97,14 @@ func (f *EventParticipantForms) validate() *utils.CommonError {
 		return utils.NewCommonError(consts.NoEntityManagerInForm, nil)
 	}
 
+	e, err := f.EM.Event().FindByUUID(f.EventUUID)
+	if err != nil {
+		return utils.NewCommonError(consts.EventNotFound, err)
+	}
+	f.Event = e
+
 	if f.UUID != "" {
-		pu, err := f.EM.ParticipantUser().FindByUUID(f.UUID)
+		pu, err := f.EM.ParticipantUser().FindByUUIDAndEventUUID(f.UUID, f.Event.UUID)
 		if err != nil {
 			return utils.NewCommonError(consts.ParticipantUserNotFound, err)
 		}
@@ -108,6 +117,7 @@ func (f *EventParticipantForms) validate() *utils.CommonError {
 func (f *EventParticipantForms) insert() (*models.ParticipantUser, *utils.CommonError) {
 	m := &models.ParticipantUser{
 		Name: f.Name,
+		EventId: f.Event.ID,
 	}
 	if err := f.EM.Create(m).Error; err != nil {
 		return nil, utils.NewCommonError(consts.FormSaveError, err)
@@ -132,7 +142,7 @@ func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *u
 	invalidCount := 0
 	for _, epf := range f.Forms {
 		if epf.UUID == "" && epf.Remove {
-			invalidCount ++
+			invalidCount++
 		}
 	}
 	if invalidCount == len(f.Forms) {

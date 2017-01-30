@@ -89,10 +89,11 @@ var _ = Describe("EventParticipant", func() {
 								"eventDateUuid": "%s"
 							}
 						],
-						"name": "haha"
+						"name": "haha",
+						"eventUuid": "%s"
 					}
 				`
-				resp := test.PerformRequest("POST", "/test", engine, fmt.Sprintf(j, eventDate.UUID))
+				resp := test.PerformRequest("POST", "/test", engine, fmt.Sprintf(j, eventDate.UUID, event.UUID))
 				//Expect(resp.Code).To(Equal(http.StatusOK))
 				jresp := test.ReadJsonResponse(resp)
 				Expect(jresp.ResultCode).To(Equal(consts.OK))
