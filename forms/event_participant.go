@@ -22,16 +22,13 @@ type EventParticipantForm struct {
 
 type EventParticipantForms struct {
 	Forms []EventParticipantForm `json:"eventParticipantList"`
-	Name  string                 `json:"name" binding:"required"`
 
-	// user's uuid
-	UUID      string `json:"participantUserUuid"`
-	EventUUID string `json:"eventUuid" binding:"required"`
+	// user
+	ParticipantUserForm
 
 	// internal
 	EM              *dao.Manager            `json:"-"`
-	ParticipantUser *models.ParticipantUser `json:"-"`
-	Event *models.Event `json:"-"`
+	Event           *models.Event           `json:"-"`
 }
 
 func (f *EventParticipantForm) validate() *utils.CommonError {
@@ -92,48 +89,6 @@ func (f *EventParticipantForm) Handle() (*models.EventParticipant, *utils.Common
 	return f.insert()
 }
 
-func (f *EventParticipantForms) validate() *utils.CommonError {
-	if f.EM == nil {
-		return utils.NewCommonError(consts.NoEntityManagerInForm, nil)
-	}
-
-	e, err := f.EM.Event().FindByUUID(f.EventUUID)
-	if err != nil {
-		return utils.NewCommonError(consts.EventNotFound, err)
-	}
-	f.Event = e
-
-	if f.UUID != "" {
-		pu, err := f.EM.ParticipantUser().FindByUUIDAndEventUUID(f.UUID, f.Event.UUID)
-		if err != nil {
-			return utils.NewCommonError(consts.ParticipantUserNotFound, err)
-		}
-		f.ParticipantUser = pu
-	}
-
-	return nil
-}
-
-func (f *EventParticipantForms) insert() (*models.ParticipantUser, *utils.CommonError) {
-	m := &models.ParticipantUser{
-		Name: f.Name,
-		EventId: f.Event.ID,
-	}
-	if err := f.EM.Create(m).Error; err != nil {
-		return nil, utils.NewCommonError(consts.FormSaveError, err)
-	}
-
-	return m, nil
-}
-
-func (f *EventParticipantForms) update() (*models.ParticipantUser, *utils.CommonError) {
-	if err := f.EM.Model(f.ParticipantUser).Update("name", f.Name).Error; err != nil {
-		return nil, utils.NewCommonError(consts.FormSaveError, err)
-	}
-
-	return f.ParticipantUser, nil
-}
-
 func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *utils.CommonError) {
 	// not allow empty slice
 	if len(f.Forms) == 0 {
@@ -150,19 +105,10 @@ func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *u
 	}
 
 	// create participant user
-	if cErr := f.validate(); cErr != nil {
+	f.ParticipantUserForm.EM = f.EM
+	participantUser, cErr := f.ParticipantUserForm.Handle()
+	if cErr != nil {
 		return res, cErr
-	}
-	if f.UUID != "" && !f.EM.NewRecord(f.ParticipantUser) {
-		if _, cErr := f.update(); cErr != nil {
-			return res, cErr
-		}
-	} else {
-		pu, cErr := f.insert()
-		if cErr != nil {
-			return res, cErr
-		}
-		f.ParticipantUser = pu
 	}
 
 	for _, epf := range f.Forms {
@@ -173,12 +119,12 @@ func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *u
 
 		var ep *models.EventParticipant
 		epf.EM = f.EM
-		epf.ParticipantUser = f.ParticipantUser
+		epf.ParticipantUser = participantUser
 		if ep, cErr = epf.Handle(); cErr != nil {
 			return
 		}
 		// inject participant user
-		ep.ParticipantUser = f.ParticipantUser
+		ep.ParticipantUser = participantUser
 
 		res = append(res, *ep)
 	}

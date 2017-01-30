@@ -19,6 +19,9 @@ func (m *Manager) EventParticipant() *eventParticipant {
 func (m *Manager) ParticipantUser() *participantUser {
 	return &participantUser{m.DB}
 }
+func (m *Manager) User() *user {
+	return &user{m.DB}
+}
 
 func GetManager(tx ...*gorm.DB) *Manager {
 	if len(tx) > 0 {

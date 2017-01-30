@@ -6,4 +6,6 @@ type ParticipantUser struct {
 	Name    string
 	EventId uint64
 	Event   *Event
+	UserId  uint64
+	User    *User
 }

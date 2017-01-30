@@ -12,6 +12,7 @@ const (
 	EventDateNotFound                 = "EventDateNotFound"
 	EventDateRequiredWhenInitializing = "EventDateRequiredWhenInitializing"
 	EventParticipantNotFound          = "EventParticipantNotFound"
+	UserNotFound                      = "UserNotFound"
 	ParticipantUserNotFound           = "ParticipantUserNotFound"
 	InvalidAdminHash                  = "InvalidAdminHash"
 )
@@ -39,6 +40,7 @@ var Messenger = &messenger{
 		EventDateNotFound:                 "未找到指定的聚会日期",
 		EventDateRequiredWhenInitializing: "第一次创建时必须要填至少一个聚会日期",
 		EventParticipantNotFound:          "未找到指定的参与人员",
+		UserNotFound:                      "未找到指定用户",
 		ParticipantUserNotFound:           "未找到指定的参与人员信息",
 		InvalidAdminHash:                  "管理员序列有误, 请检查",
 		FormSaveError:                     "保存时发生了意外错误, 请稍候重试",
