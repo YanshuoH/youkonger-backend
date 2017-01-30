@@ -33,7 +33,7 @@ func ApiEventUpsert(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, utils.NewOKJSONResponse(
-		jrenders.Event.Itemize(event, jrenders.EventParam{true})))
+		jrenders.Event.Itemize(event, jrenders.EventParam{true, nil})))
 }
 
 func ApiEventGet(c *gin.Context) {
@@ -58,5 +58,5 @@ func ApiEventGet(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, utils.NewOKJSONResponse(
-		jrenders.Event.Itemize(e, jrenders.EventParam{f.Hash == e.AdminHash})))
+		jrenders.Event.Itemize(e, jrenders.EventParam{f.Hash == e.AdminHash, nil})))
 }

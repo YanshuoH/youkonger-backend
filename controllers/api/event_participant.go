@@ -1,15 +1,15 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/YanshuoH/youkonger/forms"
-	"github.com/gin-gonic/gin/binding"
-	"net/http"
 	"github.com/YanshuoH/youkonger/consts"
-	"github.com/YanshuoH/youkonger/utils"
 	"github.com/YanshuoH/youkonger/dao"
-	"github.com/go-playground/log"
+	"github.com/YanshuoH/youkonger/forms"
 	"github.com/YanshuoH/youkonger/jrenders"
+	"github.com/YanshuoH/youkonger/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/log"
+	"net/http"
 )
 
 func ApiEventParticipantUpsert(c *gin.Context) {
@@ -43,5 +43,8 @@ func ApiEventParticipantUpsert(c *gin.Context) {
 	}
 	// fully return the event
 	c.JSON(http.StatusOK, utils.NewOKJSONResponse(
-		jrenders.Event.Itemize(e, jrenders.EventParam{false})))
+		jrenders.Event.Itemize(e, jrenders.EventParam{
+			ShowHash: false,
+			ParticipantUser: eps[0].ParticipantUser,
+		})))
 }
