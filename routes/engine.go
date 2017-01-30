@@ -44,6 +44,7 @@ func Setup() *gin.Engine {
 		{
 			eventParticipantRouter.POST("/create", api.ApiEventParticipantUpsert)
 			eventParticipantRouter.PUT("/update", api.ApiEventParticipantUpsert)
+			eventParticipantRouter.POST("/upsert", api.ApiEventParticipantUpsert)
 		}
 	}
 
