@@ -35,7 +35,8 @@ func Setup() {
 		DropTableIfExists(&models.EventDate{}).
 		DropTableIfExists(&models.EventParticipant{}).
 		DropTableIfExists(&models.EventUnavailable{}).
-		DropTableIfExists(&models.ParticipantUser{})
+		DropTableIfExists(&models.ParticipantUser{}).
+		DropTableIfExists(&models.User{})
 
 	// migration tables
 	dao.AutoMigration()

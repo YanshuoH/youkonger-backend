@@ -15,8 +15,7 @@ type JEvent struct {
 	AdminHash   string `json:"hash"`
 	JEventDates
 
-	Name                string `json:"name,omitempty"`
-	ParticipantUserUUID string `json:"participantUserUuid,omitempty"`
+	JParticipantUser
 }
 
 type EventParam struct {
@@ -37,7 +36,7 @@ func (r *event) Itemize(e *models.Event, p EventParam) JEvent {
 	}
 	if p.ParticipantUser != nil {
 		j.Name = p.ParticipantUser.Name
-		j.ParticipantUserUUID = p.ParticipantUser.UUID
+		j.JParticipantUser = ParticipantUser.Itemize(p.ParticipantUser)
 	}
 
 	// load event dates
