@@ -24,7 +24,7 @@ type EventParticipantForms struct {
 	Forms []EventParticipantForm `json:"eventParticipantList"`
 	Name  string                 `json:"name" binding:"required"`
 	// user's uuid
-	UUID string `json:"uuid"`
+	UUID string `json:"participantUserUuid"`
 
 	// internal
 	EM              *dao.Manager            `json:"-"`
@@ -129,6 +129,15 @@ func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *u
 	if len(f.Forms) == 0 {
 		return res, utils.NewCommonError(consts.FormInvalid, errors.New("Expected a none-zero length form"))
 	}
+	invalidCount := 0
+	for _, epf := range f.Forms {
+		if epf.UUID == "" && epf.Remove {
+			invalidCount ++
+		}
+	}
+	if invalidCount == len(f.Forms) {
+		return res, utils.NewCommonError(consts.FormInvalid, errors.New("Expected a none-zero length participant form"))
+	}
 
 	// create participant user
 	if cErr := f.validate(); cErr != nil {
@@ -146,18 +155,15 @@ func (f *EventParticipantForms) Handle() (res []models.EventParticipant, cErr *u
 		f.ParticipantUser = pu
 	}
 
-	forms := make([]EventParticipantForm, len(f.Forms))
-	for idx, epf := range f.Forms {
+	for _, epf := range f.Forms {
+		// nothing to do if is insert but set to removed
+		if epf.UUID == "" && epf.Remove {
+			continue
+		}
+
+		var ep *models.EventParticipant
 		epf.EM = f.EM
 		epf.ParticipantUser = f.ParticipantUser
-		if cErr = epf.validate(); cErr != nil {
-			return
-		}
-		forms[idx] = epf
-	}
-
-	for _, epf := range forms {
-		var ep *models.EventParticipant
 		if ep, cErr = epf.Handle(); cErr != nil {
 			return
 		}

@@ -150,6 +150,24 @@ var _ = Describe("EventParticipantForms", func() {
 			})
 		})
 
+		Context("With all nothing-to-do participant form", func() {
+			It("Should return an error", func() {
+				f := EventParticipantForms{
+					Forms: []EventParticipantForm{
+						EventParticipantForm{
+							Remove: true,
+						},
+					},
+					Name: "some",
+					UUID: "abc",
+					EM: dao.GetManager(),
+				}
+				res, cErr := f.Handle()
+				Expect(cErr.Code).To(Equal(consts.FormInvalid))
+				Expect(res).To(HaveLen(0))
+			})
+		})
+
 		Context("With unexisted participant user", func() {
 			It("Should return an error", func() {
 				f := EventParticipantForms{
