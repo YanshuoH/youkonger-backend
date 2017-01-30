@@ -8,6 +8,7 @@ import (
 type eventParticipant struct{}
 
 type JEventParticipant struct {
+	UUID                string `json:"uuid"`
 	Name                string `json:"name"`
 	EventDateUUID       string `json:"eventDateUuid"`
 	ParticipantUserUUID string `json:"participantUserUuid"`
@@ -23,6 +24,7 @@ func (r *eventParticipant) Itemize(ep *models.EventParticipant, ed *models.Event
 		ep.ParticipantUser = pu
 	}
 	j := JEventParticipant{
+		UUID:                ep.UUID,
 		Name:                ep.ParticipantUser.Name,
 		ParticipantUserUUID: ep.ParticipantUser.UUID,
 		EventDateUUID:       ed.UUID,

@@ -14,10 +14,14 @@ type JEvent struct {
 	Location    string `json:"location"`
 	AdminHash   string `json:"hash"`
 	JEventDates
+
+	Name                string `json:"name,omitempty"`
+	ParticipantUserUUID string `json:"participantUserUuid,omitempty"`
 }
 
 type EventParam struct {
-	ShowHash bool
+	ShowHash        bool
+	ParticipantUser *models.ParticipantUser
 }
 
 func (r *event) Itemize(e *models.Event, p EventParam) JEvent {
@@ -30,6 +34,10 @@ func (r *event) Itemize(e *models.Event, p EventParam) JEvent {
 
 	if p.ShowHash {
 		j.AdminHash = e.AdminHash
+	}
+	if p.ParticipantUser != nil {
+		j.Name = p.ParticipantUser.Name
+		j.ParticipantUserUUID = p.ParticipantUser.UUID
 	}
 
 	// load event dates
