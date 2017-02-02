@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/log"
 	"net/http"
+	"github.com/YanshuoH/youkonger/models"
 )
 
 func ApiEventParticipantUpsert(c *gin.Context) {
@@ -22,7 +23,7 @@ func ApiEventParticipantUpsert(c *gin.Context) {
 	// begin a transaction
 	em := dao.GetManager(dao.Conn.Begin())
 	f.EM = em
-	eps, cErr := f.Handle()
+	_, pu, cErr := f.Handle()
 	if cErr != nil {
 		em.Rollback()
 		c.JSON(http.StatusBadRequest, utils.NewJSONResponse(cErr.Code, cErr.Err.Error()))
@@ -34,17 +35,23 @@ func ApiEventParticipantUpsert(c *gin.Context) {
 	}
 
 	// trace back the event
-	ep := eps[0]
-	e, err := dao.Event.FindByEventParticipant(&ep)
-	if err != nil {
-		log.Error("Cannot retrieve event by event participant")
-		c.JSON(http.StatusInternalServerError, utils.NewJSONResponse(consts.DefaultErrorMsg, err.Error()))
-		return
+	var e *models.Event
+	var err error
+	if f.ParticipantUserForm.Event == nil {
+		e, err = dao.Event.FindByUUID(f.ParticipantUserForm.EventUUID)
+		if err != nil {
+			log.Error("Cannot retrieve event by event participant")
+			c.JSON(http.StatusInternalServerError, utils.NewJSONResponse(consts.DefaultErrorMsg, err.Error()))
+			return
+		}
+	} else {
+		e = f.ParticipantUserForm.Event
 	}
+
 	// fully return the event
 	c.JSON(http.StatusOK, utils.NewOKJSONResponse(
 		jrenders.Event.Itemize(e, jrenders.EventParam{
 			ShowHash: false,
-			ParticipantUser: eps[0].ParticipantUser,
+			ParticipantUser: pu,
 		})))
 }

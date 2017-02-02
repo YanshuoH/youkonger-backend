@@ -20,7 +20,7 @@ type JEventParticipants struct {
 
 func (r *eventParticipant) Itemize(ep *models.EventParticipant, ed *models.EventDate) JEventParticipant {
 	if ep.ParticipantUser == nil {
-		pu, _ := dao.ParticipantUser.FindById(ep.ParticipantUserId)
+		pu, _ := dao.ParticipantUser.FindById(ep.ParticipantUserID)
 		ep.ParticipantUser = pu
 	}
 	j := JEventParticipant{

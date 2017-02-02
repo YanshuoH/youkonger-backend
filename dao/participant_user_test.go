@@ -27,8 +27,8 @@ var _ = Describe("ParticipantUser", func() {
 
 		pu := models.ParticipantUser{
 			Name:    "someone",
-			UserId:  u.ID,
-			EventId: e.ID,
+			UserID:  u.ID,
+			EventID: e.ID,
 		}
 		Expect(Conn.Create(&pu).Error).ToNot(HaveOccurred())
 		participantUser = pu
@@ -84,6 +84,32 @@ var _ = Describe("ParticipantUser", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(res.Name).To(Equal(participantUser.Name))
 				Expect(res.ID).To(Equal(participantUser.ID))
+			})
+		})
+	})
+
+	Describe("FindUnavailableByEventID", func() {
+		Context("With unexisted event id", func() {
+			It("Should return an empty slice", func() {
+				res, err := ParticipantUser.FindUnavailableByEventID(666)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(res).To(HaveLen(0))
+			})
+		})
+
+		Context("With existed event id", func() {
+			It("Should return all unavailable participant users", func() {
+				// insert some
+				unavailablePU := models.ParticipantUser{
+					Name: "a",
+					EventID: event.ID,
+					UserID: 999,
+					Unavailable: true,
+				}
+				Expect(Conn.Create(&unavailablePU).Error).ToNot(HaveOccurred())
+				res, err := ParticipantUser.FindUnavailableByEventID(event.ID)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(res).To(HaveLen(1))
 			})
 		})
 	})

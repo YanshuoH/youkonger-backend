@@ -15,7 +15,7 @@ type JParticipantUser struct {
 
 func (r *participantUser) Itemize(pu *models.ParticipantUser) JParticipantUser {
 	if pu.User == nil {
-		u, _ := dao.User.FindById(pu.UserId)
+		u, _ := dao.User.FindById(pu.UserID)
 		pu.User = u
 	}
 
@@ -24,6 +24,14 @@ func (r *participantUser) Itemize(pu *models.ParticipantUser) JParticipantUser {
 		UserUUID: pu.User.UUID,
 		Name:     pu.Name,
 	}
+}
+
+func (r *participantUser) List(puList []models.ParticipantUser) []JParticipantUser {
+	jList := make([]JParticipantUser, len(puList))
+	for idx, pu := range puList {
+		jList[idx] = r.Itemize(&pu)
+	}
+	return jList
 }
 
 var ParticipantUser *participantUser

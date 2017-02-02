@@ -20,7 +20,7 @@ var _ = Describe("ParticipantUser", func() {
 
 		pu := models.ParticipantUser{
 			Name: "someone",
-			UserId: user.ID,
+			UserID: user.ID,
 		}
 		Expect(dao.GetManager().Create(&pu).Error).ToNot(HaveOccurred())
 		participantUser = pu

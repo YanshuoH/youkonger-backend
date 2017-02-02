@@ -27,8 +27,8 @@ var _ = Describe("ParticipantUser", func() {
 
 		pu := models.ParticipantUser{
 			Name:    "someone",
-			EventId: e.ID,
-			UserId:  u.ID,
+			EventID: e.ID,
+			UserID:  u.ID,
 		}
 		Expect(dao.GetManager().Create(&pu).Error).ToNot(HaveOccurred())
 		participateUser = pu

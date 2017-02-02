@@ -54,7 +54,7 @@ var eventParticipantSet = []models.EventParticipant{
 			ID: 1,
 		},
 		EventDateID: 1,
-		ParticipantUserId: 1,
+		ParticipantUserID: 1,
 	},
 }
 

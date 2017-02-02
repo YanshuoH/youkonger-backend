@@ -30,6 +30,8 @@ func AutoMigration() {
 		AutoMigrate(&models.EventUnavailable{}).
 		AutoMigrate(&models.ParticipantUser{}).
 		AutoMigrate(&models.User{})
+	Conn.Model(&models.ParticipantUser{}).AddUniqueIndex(
+		"participant_user_user_event_unique_idx", "user_id", "event_id")
 }
 
 func setupDaoAsService() {

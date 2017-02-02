@@ -16,6 +16,7 @@ type JEvent struct {
 	JEventDates
 
 	JParticipantUser
+	UnavailableParticipantList []JParticipantUser `json:"unavailableParticipantList"`
 }
 
 type EventParam struct {
@@ -42,6 +43,9 @@ func (r *event) Itemize(e *models.Event, p EventParam) JEvent {
 	// load event dates
 	dao.Event.LoadEventDates(e)
 	j.JEventDates = EventDate.List(e.EventDates, e)
+
+	puList, _ := dao.ParticipantUser.FindUnavailableByEventID(e.ID)
+	j.UnavailableParticipantList = ParticipantUser.List(puList)
 
 	return j
 }

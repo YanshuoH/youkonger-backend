@@ -8,10 +8,11 @@ import (
 )
 
 type ParticipantUserForm struct {
-	Name      string `json:"name" binding:"required"`
-	EventUUID string `json:"eventUuid" binding:"required"`
-	UserUUID  string `json:"userUuid"`
-	Remove    bool   `json:"remove"`
+	Name        string `json:"name" binding:"required"`
+	EventUUID   string `json:"eventUuid" binding:"required"`
+	UserUUID    string `json:"userUuid"`
+	Remove      bool   `json:"remove"`
+	Unavailable bool   `json:"unavailable"`
 
 	EM              *dao.Manager            `json:"-"`
 	Event           *models.Event           `json:"-"`
@@ -57,11 +58,12 @@ func (f *ParticipantUserForm) insert() (*models.ParticipantUser, *utils.CommonEr
 	}
 
 	m := &models.ParticipantUser{
-		Name:    f.Name,
-		EventId: f.Event.ID,
-		Event:   f.Event,
-		UserId:  f.User.ID,
-		User:    f.User,
+		Name:        f.Name,
+		EventID:     f.Event.ID,
+		Event:       f.Event,
+		UserID:      f.User.ID,
+		User:        f.User,
+		Unavailable: f.Unavailable,
 	}
 	if err := f.EM.Create(m).Error; err != nil {
 		return nil, utils.NewCommonError(consts.FormSaveError, err)
@@ -70,7 +72,11 @@ func (f *ParticipantUserForm) insert() (*models.ParticipantUser, *utils.CommonEr
 }
 
 func (f *ParticipantUserForm) update() (*models.ParticipantUser, *utils.CommonError) {
-	if err := f.EM.Model(f.ParticipantUser).Update("name", f.Name).Error; err != nil {
+	updateMap := map[string]interface{}{
+		"unavailable": f.Unavailable,
+		"name":        f.Name,
+	}
+	if err := f.EM.Model(f.ParticipantUser).Updates(updateMap).Error; err != nil {
 		return nil, utils.NewCommonError(consts.FormSaveError, err)
 	}
 	f.ParticipantUser.User = f.User
