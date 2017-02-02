@@ -4,12 +4,12 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/jrenders"
 	"github.com/YanshuoH/youkonger/models"
 	"github.com/YanshuoH/youkonger/test"
 	"testing"
 	"time"
-	"github.com/YanshuoH/youkonger/dao"
 )
 
 func TestJrenders(t *testing.T) {
@@ -34,8 +34,9 @@ var eventDateSet = []models.EventDate{
 		BaseModel: models.BaseModel{
 			ID: 1,
 		},
-		Time: time.Now(),
+		Time:    time.Now(),
 		EventID: 1,
+		IsDDay:  true,
 	},
 }
 
@@ -45,6 +46,15 @@ var eventParticipantSet = []models.EventParticipant{
 			ID: 1,
 		},
 		EventDateID: 1,
+	},
+}
+
+var participantUserSet = []models.ParticipantUser{
+	models.ParticipantUser{
+		BaseModel: models.BaseModel{
+			ID: 1,
+		},
+		Name: "bigbro",
 	},
 }
 
@@ -62,6 +72,9 @@ var _ = BeforeSuite(func() {
 	}
 	for _, ep := range eventParticipantSet {
 		conn.Create(&ep)
+	}
+	for _, pu := range participantUserSet {
+		conn.Create(&pu)
 	}
 })
 

@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"time"
-	"github.com/YanshuoH/youkonger/dao"
 )
 
 var _ = Describe("EventParticipant", func() {
@@ -15,16 +14,12 @@ var _ = Describe("EventParticipant", func() {
 	var eventParticipants []models.EventParticipant
 	var eventDate models.EventDate
 	BeforeEach(func() {
-		pu := models.ParticipantUser{
-			Name: "bigbro",
-		}
-		Expect(dao.GetManager().Create(&pu).Error).ToNot(HaveOccurred())
 		eps := []models.EventParticipant{
 			models.EventParticipant{
-				ParticipantUserId: pu.ID,
+				ParticipantUserID: participantUserSet[0].ID,
 			},
 			models.EventParticipant{
-				ParticipantUserId: pu.ID,
+				ParticipantUserID: participantUserSet[0].ID,
 			},
 		}
 		ed := models.EventDate{
@@ -34,7 +29,7 @@ var _ = Describe("EventParticipant", func() {
 			},
 		}
 
-		participantUser = pu
+		participantUser = participantUserSet[0]
 		eventParticipants = eps
 		eventDate = ed
 	})

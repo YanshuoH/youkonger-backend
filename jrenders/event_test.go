@@ -18,6 +18,7 @@ var _ = Describe("Event", func() {
 				})
 				Expect(j.AdminHash).To(Equal(""))
 				Expect(j.JEventDates.JList).To(HaveLen(1))
+				Expect(j.Finished).To(BeTrue())
 			})
 		})
 	})

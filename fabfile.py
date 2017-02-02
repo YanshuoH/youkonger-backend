@@ -15,6 +15,7 @@ def test(cover=''):
         'youkonger-middlewares': "github.com/YanshuoH/youkonger/controllers/middlewares",
         'youkonger-forms': "github.com/YanshuoH/youkonger/forms",
         'youkonger-utils': "github.com/YanshuoH/youkonger/utils",
+        'youkonger-jrender': "github.com/YanshuoH/youkonger/jrender",
     }
 
     for key, pkg in pkgs.iteritems():

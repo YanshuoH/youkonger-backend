@@ -13,6 +13,7 @@ type JEventDate struct {
 	EventUUID  string    `json:"eventUuid"`
 	Time       time.Time `json:"time"`
 	TimeInUnix int64     `json:"timeInUnix"`
+	IsDDay     bool      `json:"isDDay"`
 	JEventParticipants
 }
 
@@ -25,6 +26,7 @@ func (r *eventDate) Itemize(ed *models.EventDate, e *models.Event) JEventDate {
 		UUID:       ed.UUID,
 		Time:       ed.Time,
 		TimeInUnix: ed.Time.Unix(),
+		IsDDay:     ed.IsDDay,
 		EventUUID:  e.UUID,
 	}
 

@@ -13,6 +13,7 @@ type JEvent struct {
 	Description string `json:"description"`
 	Location    string `json:"location"`
 	AdminHash   string `json:"hash"`
+	Finished    bool   `json:"finished"`
 	JEventDates
 
 	JParticipantUser
@@ -43,6 +44,14 @@ func (r *event) Itemize(e *models.Event, p EventParam) JEvent {
 	// load event dates
 	dao.Event.LoadEventDates(e)
 	j.JEventDates = EventDate.List(e.EventDates, e)
+
+	// set finished if already have a d-day
+	for _, ed := range e.EventDates {
+		if ed.IsDDay {
+			j.Finished = true
+			break
+		}
+	}
 
 	puList, _ := dao.ParticipantUser.FindUnavailableByEventID(e.ID)
 	j.UnavailableParticipantList = ParticipantUser.List(puList)
