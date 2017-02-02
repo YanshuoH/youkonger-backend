@@ -225,9 +225,10 @@ var _ = Describe("EventParticipantForms", func() {
 					Name:      "even newer",
 					EventUUID: event.UUID,
 				}
-				res, cErr = f.Handle()
+				res, pu, cErr = f.Handle()
 				dao.Conn.Raw("SELECT count(id) FROM participant_user").Row().Scan(&finalCount)
 				Expect(cErr).To(BeNil())
+				Expect(pu).ToNot(BeNil())
 				Expect(res[0].ParticipantUser.Name).To(Equal(f.Name))
 				Expect(finalCount).To(Equal(initialCount + 1))
 			})
