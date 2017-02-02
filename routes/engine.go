@@ -41,6 +41,11 @@ func Setup() *gin.Engine {
 			eventRouter.POST("/upsert", api.ApiEventUpsert)
 		}
 
+		eventDateRouter := apiRouter.Group("/eventdate")
+		{
+			eventDateRouter.POST("/dday", api.ApiDDay)
+		}
+
 		eventParticipantRouter := apiRouter.Group("/eventparticipant")
 		{
 			eventParticipantRouter.POST("/create", api.ApiEventParticipantUpsert)

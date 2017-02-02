@@ -8,9 +8,9 @@ import (
 )
 
 type DDayForm struct {
-	UUID          string `json:"uuid"`
-	Hash          string `json:"hash"`
-	EventDateUUID string `json:"eventDateUuid"`
+	UUID          string `json:"uuid" binding:"required"`
+	Hash          string `json:"hash" binding:"required"`
+	EventDateUUID string `json:"eventDateUuid" binding:"required"`
 
 	EM    *dao.Manager  `json:"-"`
 	Event *models.Event `json:"-"`
