@@ -24,8 +24,8 @@ func RedirectCreate(c *gin.Context) {
 }
 
 func ParticipateEvent(c *gin.Context) {
-	eventUUID := c.Param("eventUuid")
-	// if event not found,
+	eventUUID := c.Param("eventUUID")
+	// if event not found
 	e, err := dao.Event.FindByUUID(eventUUID)
 	if err != nil {
 		// redirect to 404 page
@@ -44,13 +44,38 @@ func ParticipateEvent(c *gin.Context) {
 		}
 	}
 
-	// @TODO: handle exception
-	jsonByte, _ := json.Marshal(jrenders.Event.Itemize(e, jrenders.EventParam{
+	jsonByte, err := json.Marshal(jrenders.Event.Itemize(e, jrenders.EventParam{
 		ShowHash:        true,
 		ParticipantUser: participantUser,
 	}))
+	if err != nil {
+		log.Errorf("Error occured while encoding event: +%v", err)
+	}
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"InitialParticipate": string(jsonByte),
 		"IsSSR":              true,
+	})
+}
+
+func AdminEvent(c *gin.Context) {
+	eventUUID := c.Param("eventUUID")
+	eventHash := c.Param("eventHash")
+	e, err := dao.Event.FindByUUIDAndAdminHash(eventUUID, eventHash)
+	if err != nil {
+		// redirect to 404
+		NotFound(c)
+		return
+	}
+
+	// render to html
+	jsonByte, err := json.Marshal(jrenders.Event.Itemize(e, jrenders.EventParam{
+		ShowHash: true,
+	}))
+	if err != nil {
+		log.Errorf("Error occured while encoding event: +%v", err)
+	}
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"InitialAdmin": string(jsonByte),
+		"IsSSR":        true,
 	})
 }

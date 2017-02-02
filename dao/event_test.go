@@ -39,6 +39,31 @@ var _ = Describe("Event", func() {
 		})
 	})
 
+	Describe("FindByUUIDAndAdminHash", func() {
+		var event models.Event
+		BeforeEach(func() {
+			e := models.Event{
+				Title: "thing",
+			}
+			Expect(Conn.Create(&e).Error).ToNot(HaveOccurred())
+			event = e
+		})
+		Context("With none existed uuid and hash", func() {
+			It("Should return an error", func() {
+				_, err := Event.FindByUUIDAndAdminHash(event.UUID, "something")
+				Expect(err.Error()).To(Equal(gorm.ErrRecordNotFound.Error()))
+			})
+		})
+
+		Context("With correct uuid and hash", func() {
+			It("Should return the expected event", func() {
+				res, err := Event.FindByUUIDAndAdminHash(event.UUID, event.AdminHash)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(res.ID).To(Equal(event.ID))
+			})
+		})
+	})
+
 	Describe("LoadEventDate", func() {
 		Context("With given event", func() {
 			var event models.Event

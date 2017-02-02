@@ -27,7 +27,8 @@ func Setup() *gin.Engine {
 
 	viewRouter := router.Group("/event")
 	{
-		viewRouter.GET("/:eventUuid", controllers.ParticipateEvent)
+		viewRouter.GET("/:eventUUID", controllers.ParticipateEvent)
+		viewRouter.GET("/:eventUUID/admin/:eventHash", controllers.AdminEvent)
 	}
 
 	apiRouter := router.Group("/api")
