@@ -37,6 +37,21 @@ func (e *event) FindByEventParticipant(ep *models.EventParticipant) (*models.Eve
 	return res, err
 }
 
+func (e *event) IsFinished(event *models.Event) (bool, error) {
+	err := e.Where("event_id = ? AND removed = FALSE", event.ID).Find(&event.EventDates).Error
+	if err != nil {
+		return false, err
+	}
+
+	for _, ed := range event.EventDates {
+		if ed.IsDDay {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
 var Event *event
 
 func initEvent(conn *gorm.DB) {
