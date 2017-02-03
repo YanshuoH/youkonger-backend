@@ -3,6 +3,7 @@ package form_test
 import (
 	. "github.com/YanshuoH/youkonger/forms"
 
+	"bytes"
 	"github.com/YanshuoH/youkonger/consts"
 	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/models"
@@ -35,6 +36,58 @@ var _ = Describe("EventForm", func() {
 				e, cErr := f.Handle()
 				Expect(e).To(BeNil())
 				Expect(cErr.Code).To(Equal(consts.NoEntityManagerInForm))
+			})
+		})
+
+		Context("With fields too long", func() {
+			It("Should return an error", func() {
+				By("Title too long")
+				titleLength := consts.TitleLengthConstraint + 1
+				var titleBuf bytes.Buffer
+				for i := 0; i < titleLength; i++ {
+					titleBuf.WriteString("啊")
+				}
+				f := EventForm{
+					EM:    dao.GetManager(),
+					Title: titleBuf.String(),
+					UUID:  "s",
+				}
+				e, cErr := f.Handle()
+				Expect(e).To(BeNil())
+				Expect(cErr.Code).To(Equal(consts.TileTooLong))
+
+				By("Description too long")
+				descLength := consts.DescriptionLengthConstraint + 1
+				var descBuf bytes.Buffer
+				for i := 0; i < descLength; i++ {
+					descBuf.WriteString("哈")
+				}
+				f = EventForm{
+					EM:          dao.GetManager(),
+					Title:       "title",
+					UUID:        "s",
+					Description: descBuf.String(),
+				}
+				e, cErr = f.Handle()
+				Expect(e).To(BeNil())
+				Expect(cErr.Code).To(Equal(consts.DescriptionTooLong))
+
+				By("Location too long")
+				locLength := consts.LocationLengthConstraint + 1
+				var locBuf bytes.Buffer
+				for i := 0; i < locLength; i++ {
+					locBuf.WriteString("哟")
+				}
+				f = EventForm{
+					EM:          dao.GetManager(),
+					Title:       "title",
+					UUID:        "s",
+					Description: "d",
+					Location:    locBuf.String(),
+				}
+				e, cErr = f.Handle()
+				Expect(e).To(BeNil())
+				Expect(cErr.Code).To(Equal(consts.LocationTooLong))
 			})
 		})
 

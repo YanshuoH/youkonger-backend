@@ -3,6 +3,7 @@ package form_test
 import (
 	. "github.com/YanshuoH/youkonger/forms"
 
+	"bytes"
 	"github.com/YanshuoH/youkonger/consts"
 	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/models"
@@ -39,6 +40,24 @@ var _ = Describe("ParticipantUser", func() {
 				f := ParticipantUserForm{}
 				res, cErr := f.Handle()
 				Expect(cErr.Code).To(Equal(consts.NoEntityManagerInForm))
+				Expect(res).To(BeNil())
+			})
+		})
+
+		Context("With name length too long", func() {
+			It("Should return an error", func() {
+				var nameBuf bytes.Buffer
+				nameLength := consts.NameLengthConstraint + 1
+				for i := 0; i < nameLength; i++ {
+					nameBuf.WriteString("吼")
+				}
+				f := ParticipantUserForm{
+					EM:        dao.GetManager(),
+					EventUUID: "abc",
+					Name:      nameBuf.String(),
+				}
+				res, cErr := f.Handle()
+				Expect(cErr.Code).To(Equal(consts.NameTooLong))
 				Expect(res).To(BeNil())
 			})
 		})

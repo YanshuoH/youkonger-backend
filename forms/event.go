@@ -5,6 +5,7 @@ import (
 	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/models"
 	"github.com/YanshuoH/youkonger/utils"
+	"unicode/utf8"
 )
 
 type EventForm struct {
@@ -24,6 +25,16 @@ type EventForm struct {
 func (f *EventForm) validate() *utils.CommonError {
 	if f.EM == nil {
 		return utils.NewCommonError(consts.NoEntityManagerInForm, nil)
+	}
+	// title/desc/loc length
+	if utf8.RuneCountInString(f.Title) > consts.TitleLengthConstraint {
+		return utils.NewCommonError(consts.TileTooLong, nil)
+	}
+	if utf8.RuneCountInString(f.Description) > consts.DescriptionLengthConstraint {
+		return utils.NewCommonError(consts.DescriptionTooLong, nil)
+	}
+	if utf8.RuneCountInString(f.Location) > consts.LocationLengthConstraint {
+		return utils.NewCommonError(consts.LocationTooLong, nil)
 	}
 
 	if f.UUID != "" {

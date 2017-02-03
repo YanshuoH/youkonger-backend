@@ -5,6 +5,7 @@ import (
 	"github.com/YanshuoH/youkonger/dao"
 	"github.com/YanshuoH/youkonger/models"
 	"github.com/YanshuoH/youkonger/utils"
+	"unicode/utf8"
 )
 
 type ParticipantUserForm struct {
@@ -23,6 +24,10 @@ type ParticipantUserForm struct {
 func (f *ParticipantUserForm) validate() *utils.CommonError {
 	if f.EM == nil {
 		return utils.NewCommonError(consts.NoEntityManagerInForm, nil)
+	}
+
+	if utf8.RuneCountInString(f.Name) > consts.NameLengthConstraint {
+		return utils.NewCommonError(consts.NameTooLong, nil)
 	}
 
 	e, err := f.EM.Event().FindByUUID(f.EventUUID)
