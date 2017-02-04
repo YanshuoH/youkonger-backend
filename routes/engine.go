@@ -1,14 +1,15 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/YanshuoH/youkonger/conf"
-	"github.com/YanshuoH/youkonger/controllers/api"
 	"github.com/YanshuoH/youkonger/controllers"
+	"github.com/YanshuoH/youkonger/controllers/api"
 	"github.com/YanshuoH/youkonger/controllers/middlewares"
+	"github.com/gin-gonic/gin"
+	"path"
 )
 
-func Setup() *gin.Engine {
+func Setup(workspace string) *gin.Engine {
 	config := conf.Config
 	gin.SetMode(config.AppConf.GinMode)
 
@@ -18,8 +19,8 @@ func Setup() *gin.Engine {
 	router.NoRoute(middlewares.RedirectOn404())
 
 	// loading views
-	router.LoadHTMLGlob("views/*.html")
-	router.Static("/assets", "./public/assets")
+	router.LoadHTMLGlob(path.Join(workspace, "views/*.html"))
+	router.Static("/assets", path.Join(workspace, "public/assets"))
 
 	router.GET("/", controllers.Index)
 	router.GET("/create", controllers.RedirectCreate)

@@ -2,7 +2,7 @@ package conf
 
 import (
 	"github.com/BurntSushi/toml"
-	"path/filepath"
+	"github.com/YanshuoH/youkonger/utils"
 )
 
 var Config *config
@@ -21,12 +21,9 @@ type dbConf struct {
 }
 
 func Setup(file string) (*config, error) {
-	if !filepath.IsAbs(file) {
-		f, e := filepath.Abs(file)
-		if e != nil {
-			return nil, e
-		}
-		file = f
+	file, err := utils.GetAbsFilePath(file)
+	if err != nil {
+		return nil, err
 	}
 
 	c := &config{}

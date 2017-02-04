@@ -40,6 +40,12 @@
 			"revisionTime": "2016-07-21T19:07:17Z"
 		},
 		{
+			"checksumSHA1": "RkQj+xEBEVG/CFaZ8m/vcAQA2ko=",
+			"path": "github.com/go-playground/log/handlers/console",
+			"revision": "8b9a8586a0d182c4d0acf7e75139773c98aff413",
+			"revisionTime": "2016-07-21T19:07:17Z"
+		},
+		{
 			"checksumSHA1": "BIY45G2IVrTttD4Rlk9tHwiIOCM=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "3654d25ec346ee8ce71a68431025458d52a38ac0",
